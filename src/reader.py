@@ -1,33 +1,52 @@
+import os
 import csv
 import heapq
+from collections import Counter
 
 
 class Reader:
 
-    def __init__(self, readPath, outputPath,mfip, lfip, eps, _bytes):
+    def __init__(self, readPath, outputPath):
         self.readPath = readPath
         self.outputPath = outputPath
-        self.mfip = mfip
-        self.lfip = lfip
-        self. eps = eps
-        self._bytes = excbytes
+        self.excbytes = False
+        self.eps = False
 
-        print(readPath, outputPath, mfip, lfip, eps, excbytes)
+    #return the most common IPs in the counter
+    def returnMfip(self, k=1):
+        ipcounter = self._mostcommonIps()
+        print(ipcounter.most_common(k)) 
 
-    def _returnMfip():
-        pass
+    # return the least common IPs 
+    def returnLfip(self, k=1):
+        ipcounter = self._mostcommonIps()
+        print(ipcounter.most_common()[:-k-1:-1]) # firnthe most common ones and return from the counter in reverse
 
+    def _mostcommonIps(self):
+        request = "IPs"
+        ips = self._read_file(request)
+        ipcnt = Counter(ips)
+        return ipcnt
 
-    def test(self):
+    def _read_file(self, *args):
         readPath = self.readPath
         outputPath = self.outputPath
-        print(readPath)
-        with open(readPath, 'r') as file:
-            with open(outputPath, 'w') as wfile:
-                csvreader = csv.reader(file)
-                csvwriter = csv.writer(wfile)
-                for row in csvreader:
-                    csvwriter.writerow(row)
+        request = args[0]
+        
+        if request == 'IPs':
+            clientIPs = []
+            remoteIps = []
+
+        if os.path.isfile(readPath):
+            with open(readPath, 'r') as file:
+                 csvreader = csv.reader(file)
+                 for row in csvreader:
+                    if row == []:
+                        continue
+                    if request == 'IPs':
+                        #print(row)
+                        clientIPs.append(row[0].split()[2])
+        return clientIPs
 
          #   print(row)
     
