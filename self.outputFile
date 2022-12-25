@@ -1,0 +1,10 @@
+{
+    "Timestamp": "25/12/2022, 23:12:52",
+    "Script": "Least frequent IPs",
+    "Params": "/home/coder/Downloads/access.log /home/coder/Downloads/test.txt lfip -k 3 --ip-type=all -ah 1",
+    "IPs": {
+        "80.69.64.224": 1,
+        "64.14.118.196": 1,
+        "207.246.148.141": 1
+    }
+}

@@ -5,9 +5,8 @@ import socket
 
 class Reader:
 
-    def __init__(self, readPath, outputPath):
+    def __init__(self, readPath):
         self.readPath = readPath
-        self.outputPath = outputPath
         self.excbytes = False
         self.eps = False
 
@@ -15,9 +14,9 @@ class Reader:
     def returnFip(self, k=1, ip_type='all', ah=0, mfip=True):
         ipcounter = self._mostcommonIps(ip_type, ah)
         if mfip:
-            print(ipcounter.most_common(k))
+            return ipcounter.most_common(k)
         else:
-            print(ipcounter.most_common()[:-k-1:-1])
+            return ipcounter.most_common()[:-k-1:-1]
 
     def _mostcommonIps(self, ip_type, autoheal):
 
@@ -25,23 +24,32 @@ class Reader:
         ips = []
         for thisFile in filesList:
             for line in thisFile:
+                cip = line['cip']
+                destip = line['destip']
                 if autoheal:
                     try:
-                        cip = socket.inet_aton(line['cip'])
-                        destip = socket.inet_aton(line['destip'])
-
+                        socket.inet_aton(line['cip'])
                     except OSError:
-                        pass
-                else:
-                    cip = line['cip']
-                    destip = line['destip']
+                        cip = None
+                        
+                    try:
+                        socket.inet_aton(line['destip'])
+                    except OSError:
+                        destip = None 
 
                 if ip_type == 'all':
-                    ips.extend[cip, destip]
+                    if cip:
+                        ips.append(cip)
+                    if destip:
+                        ips.append(destip)
+                    
                 elif ip_type == 'client':
-                    ips.append(cip)
+                    if cip:
+                        ips.append(cip)
                 else:
-                    ips.append(destip)
+                    if destip:
+                        destip.append(destip)
+                        
         ipcnt = Counter(ips)
         return ipcnt
 

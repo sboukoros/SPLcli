@@ -1,5 +1,18 @@
 import click
+import sys
 import src.reader as reader
+import src.writer as writer
+import datetime
+
+
+class Config():
+
+    def __init__(self, timeStarted, passedargs, inputfile, outputfile):
+        """modifying the ctx.obj from the Click class to do more"""
+        self.passedArgs = passedargs
+        self.timeStarted = timeStarted
+        self.reader = reader.Reader(inputfile)
+        self.writer = writer.Writer(outputfile)
 
 
 @click.group()
@@ -9,7 +22,10 @@ import src.reader as reader
                 dir_okay=False, writable=True))
 @click.pass_context
 def cli(ctx, inputfile, outputfile):
-    ctx.obj = reader.Reader(inputfile, outputfile)
+    passedargs = sys.argv[1:]
+    passedargs = ' '.join(passedargs)
+    timeStarted = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    ctx.obj = Config(timeStarted, passedargs, inputfile, outputfile)
 
 
 @cli.command()
@@ -21,11 +37,17 @@ def cli(ctx, inputfile, outputfile):
 @click.option("-ah", "--autoheal",  default=0,
               help="Makes a best effort to keep IPs and not URLS. Default=1")
 @click.pass_obj
-def mfip(myreader, topk, ip_type='all', autoheal=0):
+def mfip(obj, topk, ip_type='all', autoheal=0):
     """This script returns the most frequent IP. In case of multiple IPs with
     the same count, they are returned in random order."""
-    print(ip_type)
-    myreader.returnFip(topk, ip_type, autoheal, mfip=True)
+    resDict = obj.reader.returnFip(topk, ip_type, autoheal, mfip=True)
+    writeDict = {"Timestamp": obj.timeStarted,
+                 "Script": "Least frequent IPs",
+                 "Params": obj.passedArgs}
+    writeDict['IPs'] = {}
+    for it1, it2 in resDict:
+        writeDict['IPs'][it1] = it2
+    obj.writer.write(writeDict)
 
 
 @cli.command()
@@ -37,10 +59,18 @@ def mfip(myreader, topk, ip_type='all', autoheal=0):
 @click.option("-ah", "--autoheal",  default=0,
               help="Makes a best effort to keep IPs and not URLS. Default=1")
 @click.pass_obj
-def lfip(myreader, topk, ip_type='all', autoheal=0):
+def lfip(obj, topk, ip_type='all', autoheal=0):
     """This script returns the least frequent IP. In case of multiple IPs with
         the same count, they are returned in random order."""
-    myreader.returnFip(topk, ip_type, autoheal, mfip=False)
+    resDict = obj.reader.returnFip(topk, ip_type, autoheal, mfip=False)
+    writeDict = {"Timestamp": obj.timeStarted,
+                 "Script": "Least frequent IPs",
+                 "Params": obj.passedArgs}
+    writeDict['IPs'] = {}
+
+    for it1, it2 in resDict:
+        writeDict['IPs'][it1] = it2
+    obj.writer.write(writeDict)
 
 
 @cli.command()
@@ -52,20 +82,20 @@ def lfip(myreader, topk, ip_type='all', autoheal=0):
 @click.option("-dest", "--destination",  default=0,
               help="Destination of the traffic")
 @click.pass_obj
-def bytesexc(myreader, source, destination, resp_type):
+def bytesexc(obj, source, destination, resp_type):
     """This script returns the total amount of bytes exchanged between 2 IPs
         specified in -src and -dst. If not specified it returns the whole
         traffic"""
-    myreader.sumbytes(source, destination, resp_type)
+    obj.reader.sumbytes(source, destination, resp_type)
 
 
 @cli.command()
 @click.pass_obj
-def eps(myreader):
+def eps(obj):
     """This script returns the total amount of bytes exchanged between 2 IPs
         specified in -src and -dst. If not specified it returns the whole
         traffic"""
-    myreader.eventsPerSecond()
+    obj.reader.eventsPerSecond()
 
 
 def main():
