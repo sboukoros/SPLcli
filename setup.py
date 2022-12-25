@@ -9,7 +9,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'cliInterface = src.cliInterface:read',
+            'cliInterface = src.cliInterface:main',
         ],
     },
 )
