@@ -25,8 +25,6 @@ class Reader:
         ips = []
         for thisFile in filesList:
             for line in thisFile:
-                #line = str(line).rstrip()
-                #_line = str(line).split(" ")
                 if autoheal:
                     try:
                         cip = socket.inet_aton(line['cip'])
@@ -69,11 +67,14 @@ class Reader:
                     sumbytes += line['respBytes']
         print(sumbytes)
 
-    def main():
-        pass
-
-    def heap():
-        pass
-
-    def eps():
-        pass
+    def eventsPerSecond(self):
+        eventTime = {}
+        filesList = self._read_file()
+        for thisFile in filesList:
+            for line in thisFile:
+                ts = line['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+                #  print(ts, line['timestamp'])
+                eventTime[ts] = eventTime.get(ts, 0) + 1
+                if ts == 0:
+                    print('whoooops')
+        print(sum(eventTime.values())//len(eventTime.keys()))

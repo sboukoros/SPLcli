@@ -1,4 +1,5 @@
 import socket
+import datetime
 
 
 class ProxyLogFile():
@@ -29,10 +30,11 @@ class ProxyLogLine():
 
     def __init__(self, line):
         list(map(lambda k, v: setattr(self, k, v),
-                        ProxyLogLine.fields, line.split()))
+                 ProxyLogLine.fields, line.split()))
         self.typeAccess, self.destip = self.typeip.split('/')
         try:
             self.timestamp = float(self.timestamp)
+            self.timestamp = datetime.datetime.fromtimestamp(self.timestamp)
         except TypeError as e:
             if self.timestamp is None:
                 pass
@@ -63,12 +65,12 @@ class ProxyLogLine():
     def __str__(self):
         s = "%s " % self.timestamp
         for k in ProxyLogLine.fields[1:]:
-            s += "%s " % getattr(self, k)    
+            s += "%s " % getattr(self, k)
         return s
 
 
 if __name__ == "__main__":
     s = ProxyLogFile('/home/coder/Downloads/access.log')
     for line in s:
-        #print(line)
+        print(line['timestamp'])
         pass
