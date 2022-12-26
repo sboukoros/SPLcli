@@ -8,7 +8,7 @@ class Writer():
         
     def write(self, res):
         json_object = json.dumps(res, indent=4)
-        with open(self.outputFile, "w") as outfile:
+        with open(self.outputFile, "a") as outfile:
             outfile.write(json_object)
 
     def _jsonwrite(self):

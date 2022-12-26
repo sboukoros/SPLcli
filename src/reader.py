@@ -49,7 +49,7 @@ class Reader:
                 else:
                     if destip:
                         destip.append(destip)
-                        
+
         ipcnt = Counter(ips)
         return ipcnt
 
@@ -73,7 +73,7 @@ class Reader:
                     sumbytes += line['rheader']
                 else:
                     sumbytes += line['respBytes']
-        print(sumbytes)
+        return sumbytes
 
     def eventsPerSecond(self):
         eventTime = {}
@@ -85,4 +85,4 @@ class Reader:
                 eventTime[ts] = eventTime.get(ts, 0) + 1
                 if ts == 0:
                     print('whoooops')
-        print(sum(eventTime.values())//len(eventTime.keys()))
+        return sum(eventTime.values())//len(eventTime.keys())
