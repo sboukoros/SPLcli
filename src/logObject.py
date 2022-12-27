@@ -1,37 +1,86 @@
 import socket
 import datetime
 
+"""Main idea for the class constructions in
+     https://gist.github.com/ArthurClune/3250419 """
+
 
 class ProxyLogFile():
-
+    """ Every Squid log file will be an object of this class"""
     def __init__(self, path):
-        """open a squid logfile, optionally gziped"""
-        try:
-            self.f = open(path, 'r')
-            next(self.f)
-        except IOError as e:
-            print(path, e)
+        """open the logfile """
+        self.path = path
+        self.iterator = 0
+        self.errlines = 0  # measure malformed lines in the file
+
+    def open(self):
+
+        if isinstance(self.path, str):
+            try:
+                self.fd = open(self.path, 'r')
+                next(self.fd)
+            except IOError as e:
+                print(self.path, e)
+                
+        else:
+            self.fd = self.path
+            self.iterator = 1
+
+    def __enter__(self):
+        #  self.fd = open(self.path, 'r')
+        #  next(self.fd)
+        self.open()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if not self.iterator:
+            self.close
 
     def __iter__(self):  # standard iterator
         return self
 
-    def __next__(self):  # return the next log line
-        line = next(self.f)
-        return ProxyLogLine(line).__dict__
+    """ Returns the next log line as an instance of ProxyLogLine
+        Counts the malformed lines to determine if the file is corrupted
+        which in that case it exits with an error """
+    def __next__(self):  # return the next log line as dictionary
+        line = next(self.fd)
+        lineDict = ProxyLogLine(line).__dict__
+        while lineDict['malformed'] > 5:
+            self.errlines += 1
+            if self.errlines == 1:
+                print("Is this a Squid log file? Parsing the log lines doesnt "
+                      "match expected input")
+                exit(-1)
+            line = next(self.fd)
+            lineDict = ProxyLogLine(line).__dict__
+        return lineDict
 
     def close(self):  # close the file
-        self.f.close()
+        if not self.iterator:
+            self.fd.close()
 
 
 class ProxyLogLine():
+    """Every log line will be mapped to this object"""
+
+    """ Fields help mapping the logfile lines to the respective field.
+        It also make the coding easier in case the log files changes format """
     fields = ['timestamp', 'rheader', 'cip', 'respCode', 'respBytes',
               'method', 'url', 'uname', 'typeip', 'resptype',
               'typeAccess', 'destip']
-
+            
     def __init__(self, line):
-        list(map(lambda k, v: setattr(self, k, v),
-                 ProxyLogLine.fields, line.split()))
+        self.malformed = 0
+        list(map(lambda k, v: setattr(self, k, v),    # map the line args
+                 ProxyLogLine.fields, line.split()))  # to the field
+        try:
+            assert (len(line.split()) + 2) == len(ProxyLogLine.fields)
+        except AssertionError:
+            self.malformed = 1  # mark the line as malformed
+        
         self.typeAccess, self.destip = self.typeip.split('/')
+
+        #  make the time human readable
         try:
             self.timestamp = float(self.timestamp)
             self.timestamp = datetime.datetime.fromtimestamp(self.timestamp)
@@ -39,17 +88,18 @@ class ProxyLogLine():
             if self.timestamp is None:
                 pass
             else:
-                raise e
-
+                self.malformed = 1
+        #  check the IP's validity
         try:
             socket.inet_aton(self.cip)
         except OSError:
             self.cip = None
 
+        #  make sure we have bytes properly formatted
         try:
             self.respBytes = int(self.respBytes)
         except TypeError as e:
-            if self.respBytes is None:
+            if self.respBytes is None or self.respBytes < 0:
                 self.respBytes = 0
             else:
                 raise e
@@ -57,7 +107,7 @@ class ProxyLogLine():
         try:
             self.rheader = int(self.rheader)
         except TypeError as e:
-            if self.rheader is None:
+            if self.rheader is None or self.rheader < 0:
                 self.rheader = 0
             else:
                 raise e
@@ -70,7 +120,8 @@ class ProxyLogLine():
 
 
 if __name__ == "__main__":
-    s = ProxyLogFile('/home/coder/Downloads/access.log')
-    for line in s:
-        print(line['timestamp'])
-        pass
+    ss = iter(['1157689320.327   2864 10.105.21.199 TCP_MISS/200 10182 GET http://www.goonernews.com/ badeyek DIRECT/207.58.145.61 text/html'])
+    a = ProxyLogFile(ss)
+    with a:
+        for i in a:
+            print(i)

@@ -1,8 +1,9 @@
 import click
 import sys
+import ipaddress
+import datetime
 import src.reader as reader
 import src.writer as writer
-import datetime
 
 
 class Config():
@@ -13,6 +14,17 @@ class Config():
         self.timeStarted = timeStarted
         self.reader = reader.Reader(inputfile)
         self.writer = writer.Writer(outputfile)
+
+
+def validate_ips(ctx, param, value):
+    ip = value
+    try:
+        ipaddress.ip_address(ip)
+        return ip
+    except ValueError:
+        if ip is None:
+            return None
+        raise click.BadParameter("malformed IP")
 
 
 @click.group()
@@ -32,10 +44,10 @@ def cli(ctx, inputfile, outputfile):
 @click.option('--ip-type', type=click.Choice(['client', 'remote', 'all'],
                                              case_sensitive=False),
               default='all')
-@click.option("-k", "--topk",  default=1,
+@click.option("-k", "--topk",  default=1, type=click.IntRange(1, 1000),
                     help="Returns the top K most frequent IPs.Default=1")
-@click.option("-ah", "--autoheal",  default=0,
-              help="Makes a best effort to keep IPs and not URLS. Default=1")
+@click.option("-ah", "--autoheal",  default=0, type=click.IntRange(0, 1),
+              help="Makes a best effort to keep IPs and not URLS. Default=0")
 @click.pass_obj
 def mfip(obj, topk, ip_type='all', autoheal=0):
     """This script returns the most frequent IP. In case of multiple IPs with
@@ -59,7 +71,7 @@ def mfip(obj, topk, ip_type='all', autoheal=0):
 @click.option("-k", "--topk",  default=1,
               help="Returns the top K least frequent IPs. Default=1")
 @click.option("-ah", "--autoheal",  default=0,
-              help="Makes a best effort to keep IPs and not URLS. Default=1")
+              help="Makes a best effort to keep IPs and not URLS. Default=0")
 @click.pass_obj
 def lfip(obj, topk, ip_type='all', autoheal=0):
     """This script returns the least frequent IP. In case of multiple IPs with
@@ -81,10 +93,12 @@ def lfip(obj, topk, ip_type='all', autoheal=0):
 @click.option('--resp-type', type=click.Choice(['header', 'body', 'all'],
                                                case_sensitive=False),
               default='all')
-@click.option("-src", "--source",  default=0,
-              help="Source of the traffic")
-@click.option("-dest", "--destination",  default=0,
-              help="Destination of the traffic")
+@click.option("-dest", "--destination",  default=None,
+              help="Destination of the traffic",
+              type=click.UNPROCESSED, callback=validate_ips)
+@click.option("-src", "--source",  default=None,
+              help="Source of the traffic",
+              type=click.UNPROCESSED, callback=validate_ips)
 @click.pass_obj
 def bytesexc(obj, source, destination, resp_type):
     """This script returns the total amount of bytes exchanged between 2 IPs
@@ -97,8 +111,10 @@ def bytesexc(obj, source, destination, resp_type):
         iptext = f"from source {source} to destination {destination}"
     elif source:
         iptext = f"from source {source}"
-    else:
+    elif destination:
         iptext = f"to destination {destination}"
+    else:
+        iptext = "from all IPs"
 
     if resp_type == 'all':
         resptext = "using all headers"
@@ -118,9 +134,7 @@ def bytesexc(obj, source, destination, resp_type):
 @cli.command()
 @click.pass_obj
 def eps(obj):
-    """This script returns the total amount of bytes exchanged between 2 IPs
-        specified in -src and -dst. If not specified it returns the whole
-        traffic"""
+    """This script returns the average events per second"""
     evts = obj.reader.eventsPerSecond()
 
     """ Create the response to be written"""
@@ -132,8 +146,4 @@ def eps(obj):
 
 
 def main():
-    try:
-        cli()
-        print(click.get_current_context().info_name)
-    except SystemExit:
-        pass
+    cli()
