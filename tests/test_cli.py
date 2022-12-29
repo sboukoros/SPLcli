@@ -85,7 +85,7 @@ class FipTesting(unittest.TestCase):
                   "mfip", "-ah 3"]
         result = runner.invoke(src.SPLcli.cli, clitxt)
         assert result.exit_code == 2  # exitcode 2 : Click package: bad args
-
+        
 
 class EpsTesting(unittest.TestCase):
     """Testing the commands eps which returns the events per second"""

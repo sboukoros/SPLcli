@@ -1,14 +1,36 @@
 import socket
 import datetime
+import os
 
 """Main idea for the class constructions in
      https://gist.github.com/ArthurClune/3250419 """
 
 
+class FilesList():
+
+    def __init__(self, path):
+        self.path = path
+        self.Files = []
+        if os.path.isfile(self.path):
+            thisFile = ProxyLogFile(self.path)
+            self.Files.append(thisFile)
+        elif os.path.isdir(self.path):
+            for subdir, dirs, files in os.walk(self.path):
+                for file in files:
+                    fullFilePath = self.path + '/' + file
+                    thisFile = ProxyLogFile(fullFilePath)
+                    self.Files.append(thisFile)
+        else:
+            raise OSError('unknown files')
+
+    def returnFiles(self):
+        return self.Files
+
+
 class ProxyLogFile():
     """ Every Squid log file will be an object of this class"""
     def __init__(self, path):
-        """open the logfile """
+        """prepare the logfile """
         self.path = path
         self.iterator = 0
         self.errlines = 0  # measure malformed lines in the file
@@ -17,8 +39,12 @@ class ProxyLogFile():
 
         if isinstance(self.path, str):
             try:
+                os.path.isfile(self.path)
                 self.fd = open(self.path, 'r')
                 next(self.fd)
+            except OSError:
+                print(self.path + ' not a file')
+                exit()
             except IOError as e:
                 print(self.path, e)
                 
@@ -34,7 +60,7 @@ class ProxyLogFile():
 
     def __exit__(self, type, value, traceback):
         if not self.iterator:
-            self.close
+            self.close()
 
     def __iter__(self):  # standard iterator
         return self
@@ -84,11 +110,8 @@ class ProxyLogLine():
         try:
             self.timestamp = float(self.timestamp)
             self.timestamp = datetime.datetime.fromtimestamp(self.timestamp)
-        except TypeError as e:
-            if self.timestamp is None:
-                pass
-            else:
-                self.malformed = 1
+        except TypeError:
+            self.malformed = 1
         #  check the IP's validity
         try:
             socket.inet_aton(self.cip)
