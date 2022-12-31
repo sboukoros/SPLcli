@@ -8,7 +8,7 @@ The tools is based on the Click framework (https://click.palletsprojects.com/en/
 The tools supports 4 basic operations with the ability to pass options to them.
 Every command can be run with --help to showcase the usage of the command and the available options.
 
-##  On how to setup the tool:
+# On how to setup the tool:
 
 # How to build the docker image
 Navigate to the folder where the Dockerfile is.
@@ -42,13 +42,13 @@ Usage: SPLcli bytesexc [OPTIONS]
 
 Options:
   --resp-type [header|body|all]
-  -src, --source INTEGER         Source of the traffic
-  -dest, --destination INTEGER   Destination of the traffic
+  -src, --source INTEGER         Source of the traffic  
+  -dest, --destination INTEGER   Destination of the traffic  
 
 
 
 ## eps for events per second
-Usage: SPLcli eps [OPTIONS]
+Usage: SPLcli eps 
 
   This script returns the average events per second
 
@@ -60,9 +60,9 @@ Usage: SPLcli mfip [OPTIONS]
   same count, they are returned in random order.
 
 Options:
-  --ip-type [client|remote|all]
-  -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1
-  -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.
+  --ip-type [client|remote|all]   
+  -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1   
+  -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.  
                                  Default=0
 
 
@@ -75,6 +75,6 @@ Usage: SPLcli mfip [OPTIONS]
 
 Options:
   --ip-type [client|remote|all]
-  -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1
-  -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.
+  -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1  
+  -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.  
                                  Default=0
