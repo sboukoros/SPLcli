@@ -2,6 +2,7 @@
 # SPLcli
 This a logparser for Squid proxy access logs.
 The tool is called SPLcli which stands for SquidProxyLogs cli.
+It requires docker to run OR can be build and installed locally. 
 
 
 The tools is based on the Click framework (https://click.palletsprojects.com/en/8.1.x/) for Python. 
@@ -10,12 +11,17 @@ Every command can be run with --help to showcase the usage of the command and th
 
 # On how to setup the tool:
 
-# How to build the docker image
+# Option 1 - How to build the docker image
 Navigate to the folder where the Dockerfile is.
 Build the image: $ docker build -t <nameYOUwant>
 Run the app: $ docker run <nameYOUGave> -it
 
 For the program to run, it needs to run interactively. Hence, the -it option.
+
+# Option 2 - Install and run locally
+Clone the repo and enter it.
+Build the SPLcli package using pip $ pip install .
+Run the tool using the SPLcli command.
 
 # On how to run the tool:
 Usage: SPLcli [OPTIONS] INPUTFILE OUTPUTFILE COMMAND [ARGS]...
