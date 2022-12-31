@@ -19,15 +19,16 @@ For the program to run, it needs to run interactively. Hence, the -it option.
 
 # On how to run the tool:
 Usage: SPLcli [OPTIONS] INPUTFILE OUTPUTFILE COMMAND [ARGS]...
-
+```
 Options:
   --help  Show this message and exit.
+  ```
 
 Commands:
-  bytesexc  This script returns the total amount of bytes exchanged...
-  eps       This script returns the total amount of bytes exchanged...
-  lfip      This script returns the least frequent IP.
-  mfip      This script returns the most frequent IP.
+  - bytesexc  This script returns the total amount of bytes exchanged...
+  - eps       This script returns the total amount of bytes exchanged...
+  - lfip      This script returns the least frequent IP.
+  - mfip      This script returns the most frequent IP.
 
 In details the 4 commands and their options:
 
@@ -39,12 +40,12 @@ Usage: SPLcli bytesexc [OPTIONS]
 
   This script returns the total amount of bytes exchanged between 2 IPs
   specified in -src and -dst. If not specified it returns the whole traffic
-
+```
 Options:
   --resp-type [header|body|all]
   -src, --source INTEGER         Source of the traffic  
   -dest, --destination INTEGER   Destination of the traffic  
-
+```
 
 
 ## eps for events per second
@@ -58,13 +59,13 @@ Usage: SPLcli mfip [OPTIONS]
 
   This script returns the most frequent IP. In case of multiple IPs with the
   same count, they are returned in random order.
-
+```
 Options:
   --ip-type [client|remote|all]   
   -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1   
   -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.  
                                  Default=0
-
+```
 
 
 ## lfip for bottom k least frequent IPs 
@@ -72,9 +73,10 @@ Usage: SPLcli mfip [OPTIONS]
 
   This script returns the most frequent IP. In case of multiple IPs with the
   same count, they are returned in random order.
-
+```
 Options:
   --ip-type [client|remote|all]
   -k, --topk INTEGER             Returns the top K most frequent IPs.Default=1  
   -ah, --autoheal INTEGER        Makes a best effort to keep IPs and not URLS.  
                                  Default=0
+                                 ```
