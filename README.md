@@ -1,3 +1,4 @@
+
 # SPLcli
 This a logparser for Squid proxy access logs.
 The tool is called SPLcli which stands for SquidProxyLogs cli.
@@ -7,8 +8,16 @@ The tools is based on the Click framework (https://click.palletsprojects.com/en/
 The tools supports 4 basic operations with the ability to pass options to them.
 Every command can be run with --help to showcase the usage of the command and the available options.
 
-# On how to run the tool:
+##  On how to setup the tool:
 
+# How to build the docker image
+Navigate to the folder where the Dockerfile is.
+Build the image: $ docker build -t <nameYOUwant>
+Run the app: $ docker run <nameYOUGave> -it
+
+For the program to run, it needs to run interactively. Hence, the -it option.
+
+# On how to run the tool:
 Usage: SPLcli [OPTIONS] INPUTFILE OUTPUTFILE COMMAND [ARGS]...
 
 Options:
@@ -24,7 +33,7 @@ In details the 4 commands and their options:
 
 
 
-# bytesexc for bytes exchanged
+## bytesexc for bytes exchanged
 
 Usage: SPLcli bytesexc [OPTIONS]
 
@@ -38,13 +47,13 @@ Options:
 
 
 
-# eps for events per second
+## eps for events per second
 Usage: SPLcli eps [OPTIONS]
 
   This script returns the average events per second
 
 
-# mfip for top  k most frequent IPs 
+## mfip for top  k most frequent IPs 
 Usage: SPLcli mfip [OPTIONS]
 
   This script returns the most frequent IP. In case of multiple IPs with the
@@ -58,7 +67,7 @@ Options:
 
 
 
-# lfip for bottom k least frequent IPs 
+## lfip for bottom k least frequent IPs 
 Usage: SPLcli mfip [OPTIONS]
 
   This script returns the most frequent IP. In case of multiple IPs with the
