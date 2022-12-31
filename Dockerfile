@@ -4,4 +4,7 @@ COPY requirements.txt .
 ADD src/ ./src
 ADD  pyproject.toml .
 RUN pip install .
-CMD ['SPLcli']
+RUN mkdir ./sample_data
+COPY sample_data/ /usr/src/app/sample_data
+RUN gzip -d /usr/src/app/sample_data/access.log.gz
+CMD ["bash"]

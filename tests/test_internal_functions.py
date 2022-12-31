@@ -81,6 +81,6 @@ class ReaderTesting(unittest.TestCase):
         print(ips)
         assert ips[0][0] == '10.105.21.199'
 
+
 if __name__ == '__main__':
     unittest.main()
-
