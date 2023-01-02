@@ -127,5 +127,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-tests/test_files/correct_data/access3.txt
-tests/test_files/tt.txt
