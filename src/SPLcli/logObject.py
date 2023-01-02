@@ -7,21 +7,23 @@ import os
 
 
 class FilesList():
+    ''' Files list is the mail class that created a collection of file(s)
+     that are supposed to be logfiles '''
 
     def __init__(self, path):
         self.path = path
         self.Files = []
-        if os.path.isfile(self.path):
+        if os.path.isfile(self.path):  # case the input is single file
             thisFile = ProxyLogFile(self.path)
             self.Files.append(thisFile)
-        elif os.path.isdir(self.path):
+        elif os.path.isdir(self.path):  # case the input is a dir
             for subdir, dirs, files in os.walk(self.path):
                 for file in files:
                     fullFilePath = self.path + '/' + file
                     thisFile = ProxyLogFile(fullFilePath)
                     self.Files.append(thisFile)
         else:
-            raise OSError('unknown files')
+            raise OSError('Unknown files provided')
 
     def returnFiles(self):
         return self.Files
@@ -29,6 +31,7 @@ class FilesList():
 
 class ProxyLogFile():
     """ Every Squid log file will be an object of this class"""
+
     def __init__(self, path):
         """prepare the logfile """
         self.path = path
@@ -36,7 +39,6 @@ class ProxyLogFile():
         self.errlines = 0  # measure malformed lines in the file
 
     def open(self):
-
         if isinstance(self.path, str):
             try:
                 os.path.isfile(self.path)
@@ -47,12 +49,13 @@ class ProxyLogFile():
                 exit()
             except IOError as e:
                 print(self.path, e)
-                
+                exit()     
         else:
             self.fd = self.path
             self.iterator = 1
 
     def __enter__(self):
+        ''' Required for with-open commands'''
         #  self.fd = open(self.path, 'r')
         #  next(self.fd)
         self.open()
@@ -67,11 +70,19 @@ class ProxyLogFile():
 
     """ Returns the next log line as an instance of ProxyLogLine
         Counts the malformed lines to determine if the file is corrupted
-        which in that case it exits with an error """
+        which in that case it exits with an error 
+
+        In case a line cannot be matched to the predefined logfields, it
+        is marked as malformed. When a file has more than 5 malformed lines
+        it is marked as corrupted and the program exits.
+
+
+
+        """
     def __next__(self):  # return the next log line as dictionary
         line = next(self.fd)
         lineDict = ProxyLogLine(line).__dict__
-        while lineDict['malformed'] > 5:
+        while lineDict['malformed'] > 5:  # malformed lines counter set to 5
             self.errlines += 1
             if self.errlines == 1:
                 print("Is this a Squid log file? Parsing the log lines doesnt "
@@ -90,7 +101,8 @@ class ProxyLogLine():
     """Every log line will be mapped to this object"""
 
     """ Fields help mapping the logfile lines to the respective field.
-        It also make the coding easier in case the log files changes format """
+        It also make the coding easier in case the log files changes format
+        Ideally, this should be moved to a  json file for easier maintainance """
     fields = ['timestamp', 'rheader', 'cip', 'respCode', 'respBytes',
               'method', 'url', 'uname', 'typeip', 'resptype',
               'typeAccess', 'destip']
@@ -143,8 +155,4 @@ class ProxyLogLine():
 
 
 if __name__ == "__main__":
-    ss = iter(['1157689320.327   2864 10.105.21.199 TCP_MISS/200 10182 GET http://www.goonernews.com/ badeyek DIRECT/207.58.145.61 text/html'])
-    a = ProxyLogFile(ss)
-    with a:
-        for i in a:
-            print(i)
+    pass

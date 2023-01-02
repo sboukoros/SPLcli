@@ -4,16 +4,17 @@ import SPLcli.logObject as logObject
 
 
 class Reader:
-
+    ''' Main class that coordinates program functionalities'''
     def __init__(self, readPath):
         self.readpath = readPath
 
-    def _getFiles(self):
+    '''Return the files provided by the user'''
+    def _getFiles(self):  
         files = logObject.FilesList(self.readpath)
         self.files = files.returnFiles()
         return self.files
 
-    # return the most/least common IPs in the counter
+    ''' Return the most/least common IPs in the counter '''
     def returnFip(self, k=1, ip_type='all', ah=0, mfip=True):
         ipcounter = self._mostcommonIps(ip_type, ah)
         if mfip:
@@ -61,6 +62,7 @@ class Reader:
                 returnips.append(destip)
         return returnips
 
+    '''Retunrs the sum of all bytes'''
     def sumbytes(self, src, dest, resp_type):
         sumbytes = 0
         filesList = self._getFiles()
@@ -104,5 +106,5 @@ class Reader:
         try:
             res = sum(vals) // len(keys)
         except ZeroDivisionError:
-            return 0
+            return 0   # in case of error, return 0 as it wont affect the sum
         return res

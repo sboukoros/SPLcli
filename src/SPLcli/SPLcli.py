@@ -7,9 +7,9 @@ import SPLcli.writer as writer
 
 
 class Config():
+    """modifying the ctx.obj from the Click class to do more"""
 
     def __init__(self, timeStarted, passedargs, inputfile, outputfile):
-        """modifying the ctx.obj from the Click class to do more"""
         self.passedArgs = passedargs
         self.timeStarted = timeStarted
         self.reader = reader.Reader(inputfile)
@@ -17,6 +17,7 @@ class Config():
 
 
 def validate_ips(ctx, param, value):
+    ''' Function to ensure correct IPs'''
     ip = value
     try:
         ipaddress.ip_address(ip)
@@ -25,6 +26,9 @@ def validate_ips(ctx, param, value):
         if ip is None:
             return None
         raise click.BadParameter("malformed IP")
+
+
+''' Main Click cli group of subcommands'''
 
 
 @click.group()
@@ -38,6 +42,9 @@ def cli(ctx, inputfile, outputfile):
     passedargs = ' '.join(passedargs)
     timeStarted = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     ctx.obj = Config(timeStarted, passedargs, inputfile, outputfile)
+
+
+''' Mfip sub command'''
 
 
 @cli.command()
@@ -64,6 +71,9 @@ def mfip(obj, topk, ip_type='all', autoheal=0):
     obj.writer.write(writeDict)
 
 
+''' Lfip subcommand'''
+
+
 @cli.command()
 @click.option('--ip-type', type=click.Choice(['client', 'remote', 'all'],
                                              case_sensitive=False),
@@ -87,6 +97,9 @@ def lfip(obj, topk, ip_type='all', autoheal=0):
     for it1, it2 in resDict:
         writeDict['IPs'][it1] = it2
     obj.writer.write(writeDict)
+
+
+'''Bytes excanged subcommand'''
 
 
 @cli.command()
@@ -129,6 +142,9 @@ def bytesexc(obj, source, destination, resp_type):
                  "Params": obj.passedArgs,
                  "bytes exchanged": totalbytes}
     obj.writer.write(writeDict)
+
+
+'''Events per second subcommand'''
 
 
 @cli.command()

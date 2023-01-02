@@ -78,7 +78,6 @@ class ReaderTesting(unittest.TestCase):
         a = SPLcli.reader.Reader(test)
         ips = a.returnFip(k=1, ip_type='all', ah=1, mfip=True)
         assert len(ips) == 1
-        print(ips)
         assert ips[0][0] == '10.105.21.199'
 
 

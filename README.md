@@ -1,6 +1,5 @@
 
-# SPLcli
-This a logparser for Squid proxy access logs.
+# SPLcli -  a logparser for Squid proxy access logs.
 The tool is called SPLcli which stands for SquidProxyLogs cli.
 It requires docker to run OR can be build and installed locally. 
 
@@ -23,6 +22,7 @@ Clone the repo and enter it.
 Build the SPLcli package using pip $ pip install .
 Run the tool using the SPLcli command.
 
+
 # On how to run the tool:
 Usage: SPLcli [OPTIONS] INPUTFILE OUTPUTFILE COMMAND [ARGS]...
 ```
@@ -38,7 +38,10 @@ Commands:
 
 In details the 4 commands and their options:
 
+**In orded for the tool to display the --help options of the subcommands, it is required
+that correct INPUT OUTPUT are specified first.**
 
+In case a directory is provided: If one of the directory files is malformed or corrupted to program will exit.
 
 ## bytesexc for bytes exchanged
 
